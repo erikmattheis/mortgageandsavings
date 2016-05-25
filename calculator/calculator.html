@@ -1,0 +1,116 @@
+<form>
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-6">
+
+			<div class="form-group">
+				<label for="ageStart">Erik's Current Age</label>
+				<input id="ageStart" type="number" ng-model="ageStart">
+			</div>
+
+			<div class="form-group">
+				<label for="ageStart">Retirement Age</label>
+				<input id="ageRetirement" type="number" ng-model="ageRetirement">
+			</div>
+
+			<div class="form-group">
+				<label for="yearlyGrossIncome">Combined Yearly Gross Income</label>
+				<input id="yearlyGrossIncome" type="number" ng-model="yearlyGrossIncome">
+			</div>
+
+			<div class="form-group">
+				<label for="taxRate">Effective Tax Rate (%)</label>
+				<input id="taxRate" type="number" step="0.1" ng-model="taxRate">
+			</div>
+
+			<div class="form-group">
+				<label for="monthlyPretaxSavingsContribution">Monthly Pre-tax Savings Contribution</label>
+				<input id="monthlyPretaxSavingsContribution" type="number" ng-model="monthlyPretaxSavingsContribution">
+			</div>
+
+			<div class="form-group">
+				<label for="monthlyPosttaxSavingsContribution">Monthly Post-tax Savings Contribution</label>
+				<input id="monthlyPosttaxSavingsContribution" type="number" ng-model="monthlyPosttaxSavingsContribution">
+			</div>
+
+			<div class="form-group">
+				<label for="afterTaxAndSavingsTowardsMortgage">Percent of After-Tax and Savings to Go Toward Mortgage</label>
+				<input id="afterTaxAndSavingsTowardsMortgage" type="number" ng-model="afterTaxAndSavingsTowardsMortgage">
+			</div>
+
+			<div class="form-group">
+				<label for="annualSavingsInterest">Anticipated Yearly Savings Interest (% compounded annually)</label>
+				<input id="annualSavingsInterest" type="number" step="0.1" ng-model="annualSavingsInterest">
+			</div>
+
+			<div class="form-group">
+				<label for="retirementSpending">Anticipated Yearly Retirement Spending</label>
+				<input id="retirementSpending" type="number" ng-model="retirementSpending">
+			</div>
+
+			<div class="form-group">
+				<label for="mortgageInterest">Mortgage Interest (%)</label>
+				<input id="mortgageInterest" type="number" step="0.01" ng-model="mortgageInterest">
+			</div>
+
+			<div class="form-group">
+				<label for="mortgageTerm">Mortgage Term</label>
+				<input id="mortgageTerm" type="number" ng-model="mortgageTerm">
+			</div>
+
+			<div class="form-group">
+				<button ng-click="calculate()">Calculate</button>
+			</div>
+		</div>
+		<div class="col-xs-6">
+			<div class="row">
+				<div class="col-xs-12">
+					<p>35% of an after-tax and after-savings yearly income of <span ng-bind="yearlyAfterTaxAndSavingsIncome | currency"></span> is a mortgage payment of <span ng-bind="monthlyMortgagePayment | currency"></span> which at an interest rate of <span ng-bind="mortgageInterest"></span>% for <span ng-bind="mortgageTerm"></span> years allows the simple financing of a home with a purchase price of <span style="color:green; font-weight:bold" ng-bind="principal | currency"></span> <em>with no down payment</em>. By simple, I mean only interest is considered, not interest, taxes and insurance.</p>
+
+					<p>All default numbers are estimates unfavorable to our situation. Specifically, it assumes our income will never be over 100K, that income taxes and mortage rates will rise, that our retirement fund accrues interest at a rate 33% poorer than the historival average of the S&amp;P 500. It also assumes Paul Ryan successfully ruins Social Security before we retire.</p>
+
+					<p>I also recall the bank will estimate what we can afford by taking 35-45% of our income before savings - this calculates the percentage after savings contributions.</p>
+
+					<p>The next version of this tool will incorporate PIMI and a down payment!</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-3">
+				</div>
+				<div class="col-xs-2">
+					Savings Contribution
+				</div>
+				<div class="col-xs-3">
+					Accrued Retirement Savings
+				</div>
+				<div class="col-xs-2">
+					Mortagage Payment This Year
+				</div>
+				<div class="col-xs-2">
+					Mortagage Payment from Savings
+				</div>
+			</div>
+			<div class="row" ng-repeat="result in results">
+				<div class="col-xs-3">
+					Year <span ng-bind="$index"></span> (Erik is {{ageStart + $index}})
+				</div>
+				<div class="col-xs-2">
+					{{result.savingsContribution | currency}}
+				</div>
+				<div class="col-xs-3">
+					{{result.savings | currency}}
+				</div>
+				<div class="col-xs-2">
+					{{result.mortgagePayments | currency}}
+				</div>
+				<div class="col-xs-2">
+					{{result.mortgagePaymentsFromSavings | currency}}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+</form>
