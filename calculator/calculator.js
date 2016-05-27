@@ -21,10 +21,27 @@ angular.module('myApp.calculator', ['ngRoute'])
 	$scope.afterTaxAndSavingsTowardsMortgage = 35;
 	$scope.annualSavingsInterest = 6.5;
 	$scope.retirementSpending = 60000;
-	$scope.homeownersInsuranceRate = 2;
+
+	$scope.homeownersInsuranceRate = 1.5;
+	$scope.propertyTaxRate = 5;
 	$scope.mortgageInterest = 4;
 	$scope.mortgageTerm = 30;
+	$scope.downPayment = 0;
+	$scope.monthlyMortgagePayment = 0;
 
+	$scope.$watch("name", function(newValue, oldValue) {
+		if ($scope.name.length > 0) {
+			$scope.greeting = "Greetings " + $scope.name;
+		}
+	});
+
+
+	$scope.estimatePrincipal = function() {
+		var yearlyTaxableIncome = $scope.yearlyGrossIncome - ($scope.monthlyPretaxSavingsContribution * 12);
+		var yearlyAfterTaxAndSavingsIncome = (yearlyTaxableIncome * (1 - ($scope.taxRate/100))) - ($scope.monthlyPosttaxSavingsContribution * 12);
+		$scope.monthlyMortgagePayment = calculateMonthlyMortgagePayment(yearlyAfterTaxAndSavingsIncome);
+		$scope.purchasePrice = calculateTotal($scope.monthlyMortgagePayment);
+	}
 	$scope.calculate = function() {
 
 		$scope.results = [];
@@ -35,16 +52,15 @@ angular.module('myApp.calculator', ['ngRoute'])
 		var savings = $scope.savingsBeginningBalance ;
 		var savingsInterest = 1 + ($scope.annualSavingsInterest/100);
 
-		var monthlyMortgagePayment = calculateMonthlyMortgagePayment(yearlyAfterTaxAndSavingsIncome);
-		$scope.monthlyMortgagePayment = monthlyMortgagePayment;
-		var principal = calculateTotal(monthlyMortgagePayment);
+		
+		var principal = calculateTotal($scope.monthlyMortgagePayment);
 		$scope.principal = principal;
 		//var mortgageInsurance = 
 		for (var i = $scope.ageStart; i < $scope.ageRetirement || i <  $scope.ageStart + $scope.mortgageTerm || i < 91; i++) {
 			var result = {};
 
 			if (i <  $scope.ageStart + $scope.mortgageTerm) {
-				result.mortgagePayments = monthlyMortgagePayment * 12;
+				result.mortgagePayments = $scope.monthlyMortgagePayment * 12;
 				result.pitiPayments = result.mortgagePayments + ($scope.purchasePrice * $scope.propertyTaxRate / 100) + ($scope.purchasePrice * $scope.homeownersInsuranceRate / 100);
 			}
 			else {
@@ -61,8 +77,8 @@ angular.module('myApp.calculator', ['ngRoute'])
 				savings -= $scope.retirementSpending;
 
 				if (i <  $scope.ageStart + $scope.mortgageTerm) {
-					savings -= monthlyMortgagePayment * 12;
-					result.mortgagePaymentsFromSavings = monthlyMortgagePayment * 12;
+					savings -= $scope.monthlyMortgagePayment * 12;
+					result.mortgagePaymentsFromSavings = $scope.monthlyMortgagePayment * 12;
 				}
 			}
 
@@ -81,7 +97,7 @@ angular.module('myApp.calculator', ['ngRoute'])
 	$scope.calculate();
 
 	function calculateMonthlyMortgagePayment(yearlyAfterTaxAndSavingsIncome) {
-		return ($scope.afterTaxAndSavingsTowardsMortgage/100) * (yearlyAfterTaxAndSavingsIncome / 12);
+		return +(($scope.afterTaxAndSavingsTowardsMortgage/100) * (yearlyAfterTaxAndSavingsIncome / 12)).toFixed(2);
 	}
 
 	
@@ -90,10 +106,9 @@ angular.module('myApp.calculator', ['ngRoute'])
   }
 
   function calculateTotal(monthlyMortgagePayment) {
-	var apr = $scope.mortgageInterest / 1200;
-	var carCost = pv($scope.mortgageTerm * 12, monthlyMortgagePayment, apr);
-	console.log('carCost', carCost, $scope.mortgageTerm * 12, monthlyMortgagePayment, apr);
-	return carCost;
+	var apr = ($scope.mortgageInterest + $scope.homeownersInsuranceRate + $scope.propertyTaxRate) / 1200;
+	var monthly = pv($scope.mortgageTerm * 12, monthlyMortgagePayment, apr);
+	return +monthly.toFixed(2);;
   }
 
 
